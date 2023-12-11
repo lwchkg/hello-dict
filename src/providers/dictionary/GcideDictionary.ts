@@ -9,7 +9,6 @@ function gcideTransformHtml(html: string): string {
   // Replace "<h2>[text1]</h2><br /><h2>[text2]</h2>" by
   // "<h2>[text1] | [text2]</h2>". Sanitize first because the html in the data
   // is not yet sanitized and may contain human errors.
-  console.log(html);
   return sanitizeHtml(html, {
     allowedAttributes: { a: [] },
   }).replace("</h2><br /><h2>", " | ");
