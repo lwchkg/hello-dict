@@ -1,8 +1,11 @@
-import gcideUrl from "assets/gcide-0.51.json?url";
-import { DictState, IDictionarySync } from "./IDictionary";
-import { toKey } from "./util_dictionary";
+import { ZstdInit } from "@oneidentity/zstd-js/asm/decompress";
 import sanitizeHtml from "sanitize-html";
 
+import { DictState, IDictionarySync } from "./IDictionary";
+import { toKey } from "./util_dictionary";
+
+const gcideUrl =
+  "https://cdn.jsdelivr.net/gh/lwchkg/hello-dict-data@523fc6ae36fc110296dc881d02747a7d74f8b9de/gcide-0.51.json.oneidzst";
 const dicts: Map<string, GcideDictionary> = new Map();
 
 function gcideTransformHtml(html: string): string {
@@ -88,7 +91,15 @@ export class GcideDictionary implements IDictionarySync {
       this.#state = DictState.loading;
       const response = await fetch(this.url);
       console.log("Read data.");
-      this.jsonData = await response.json();
+      const compressed = new Uint8Array(await response.arrayBuffer());
+      const { ZstdSimple } = await ZstdInit();
+
+      const jsonByteArray = ZstdSimple.decompress(compressed);
+      const jsonString = new TextDecoder().decode(jsonByteArray);
+      console.log(jsonString.slice(jsonString.length - 100));
+      console.log(jsonByteArray.length);
+      this.jsonData = JSON.parse(jsonString);
+
       console.log("Parsed data.");
       await this.generateMapping();
       this.#state = DictState.loaded;
