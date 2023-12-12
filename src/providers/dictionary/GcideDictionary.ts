@@ -6,6 +6,8 @@ import { toKey } from "./util_dictionary";
 
 const gcideUrl =
   "https://cdn.jsdelivr.net/gh/lwchkg/hello-dict-data@523fc6ae36fc110296dc881d02747a7d74f8b9de/gcide-0.51.json.oneidzst";
+const gcideIntegrity =
+  "sha384-L038h5vs2+CvPbQmjSgOMIhe8t9pDwn0B3OaAcHOCwJU3QWzjTVPAsDZI+Qg36sE";
 const dicts: Map<string, GcideDictionary> = new Map();
 
 function gcideTransformHtml(html: string): string {
@@ -89,15 +91,16 @@ export class GcideDictionary implements IDictionarySync {
 
     try {
       this.#state = DictState.loading;
-      const response = await fetch(this.url);
+      const response =
+        this.url === gcideUrl
+          ? await fetch(this.url, { integrity: gcideIntegrity })
+          : await fetch(this.url);
       console.log("Read data.");
       const compressed = new Uint8Array(await response.arrayBuffer());
       const { ZstdSimple } = await ZstdInit();
 
       const jsonByteArray = ZstdSimple.decompress(compressed);
       const jsonString = new TextDecoder().decode(jsonByteArray);
-      console.log(jsonString.slice(jsonString.length - 100));
-      console.log(jsonByteArray.length);
       this.jsonData = JSON.parse(jsonString);
 
       console.log("Parsed data.");
