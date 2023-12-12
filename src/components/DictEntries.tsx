@@ -1,5 +1,5 @@
 import { GcideDictionary } from "providers/dictionary/GcideDictionary";
-import * as sanitizeHtml from "sanitize-html";
+import sanitizeHtml from "sanitize-html";
 
 import { reactPromise } from "utils/reactPromise";
 
