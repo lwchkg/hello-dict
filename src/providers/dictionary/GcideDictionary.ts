@@ -1,8 +1,8 @@
-import { ZstdInit } from "@oneidentity/zstd-js/asm/decompress";
 import sanitizeHtml from "sanitize-html";
 
-import { DictState, IDictionarySync } from "./IDictionary";
-import { toKey } from "./util_dictionary";
+import { DictState, IDictionary } from "./IDictionary";
+import workerUrl from "./worker.js?worker&url";
+import { MessageType } from "./worker.ts";
 
 const gcideUrl =
   "https://cdn.jsdelivr.net/gh/lwchkg/hello-dict-data@523fc6ae36fc110296dc881d02747a7d74f8b9de/gcide-0.51.json.oneidzst";
@@ -19,11 +19,15 @@ function gcideTransformHtml(html: string): string {
   }).replace("</h2><br /><h2>", " | ");
 }
 
-export class GcideDictionary implements IDictionarySync {
+export class GcideDictionary implements IDictionary {
   jsonData: { [x: string]: string[] } = {};
   listeners: (() => void)[] = [];
   mapping: Map<string, string[]> = new Map();
   url: string = "";
+  worker: Worker = new Worker(new URL(workerUrl, import.meta.url), {
+    type: "module",
+  });
+  workerListeners: (() => void)[] = [];
 
   #state: DictState = DictState.uninitialized;
 
@@ -39,46 +43,44 @@ export class GcideDictionary implements IDictionarySync {
 
   async findWord(word: string): Promise<string[] | null> {
     if (this.#state === DictState.loaded)
-      return Promise.resolve(this.findWordSync(word));
+      return Promise.resolve(this.findWordInner(word));
     if (this.#state === DictState.permaError)
       return Promise.reject("Unable to load dictionary.");
 
     return new Promise((resolve, reject) => {
       this.listeners.push(() => {
-        if (this.#state === DictState.loaded) resolve(this.findWordSync(word));
+        if (this.#state === DictState.loaded) resolve(this.findWordInner(word));
         else reject("Unable to load dictionary.");
       });
     });
   }
 
-  findWordSync(word: string): string[] | null {
+  async findWordInner(word: string): Promise<string[] | null> {
     if (
       this.#state === DictState.uninitialized ||
       this.#state === DictState.retry
     )
-      this.#initDict();
+      await this.#initDict();
 
     if (this.#state !== DictState.loaded) return null;
 
-    const key = toKey(word);
+    if (this.worker.onmessage) {
+      await new Promise<void>(resolve => {
+        this.workerListeners.push(() => resolve());
+      });
+    }
+    return await new Promise<string[]>(resolve => {
+      this.worker.onmessage = (msg: MessageEvent<string[]>) => {
+        resolve(msg.data.map(gcideTransformHtml));
+        this.#maybeSendNextWorkerMessage();
+      };
 
-    const result: string[] = [];
-    this.mapping.get(key)?.forEach((entry) => {
-      result.push(...this.jsonData[entry].map(gcideTransformHtml));
+      this.worker.postMessage({ action: "find", word });
     });
-    return result;
   }
 
   getState(): DictState {
     return this.#state;
-  }
-
-  private async generateMapping(): Promise<void> {
-    Object.keys(this.jsonData).forEach((word: string) => {
-      const key = toKey(word);
-      if (!this.mapping.has(key)) this.mapping.set(key, [word]);
-      else this.mapping.get(key)?.push(word);
-    });
   }
 
   async #initDict(): Promise<void> {
@@ -91,22 +93,32 @@ export class GcideDictionary implements IDictionarySync {
 
     try {
       this.#state = DictState.loading;
-      const response =
-        this.url === gcideUrl
-          ? await fetch(this.url, { integrity: gcideIntegrity })
-          : await fetch(this.url);
-      console.log("Read data.");
-      const compressed = new Uint8Array(await response.arrayBuffer());
-      const { ZstdSimple } = await ZstdInit();
 
-      const jsonByteArray = ZstdSimple.decompress(compressed);
-      const jsonString = new TextDecoder().decode(jsonByteArray);
-      this.jsonData = JSON.parse(jsonString);
+      const msg: MessageType = {
+        action: "init",
+        url: this.url,
+      };
+      if (this.url == gcideUrl) msg.integrity = gcideIntegrity;
 
-      console.log("Parsed data.");
-      await this.generateMapping();
+      if (this.worker.onmessage) {
+        await new Promise<void>(resolve => {
+          this.workerListeners.push(() => resolve());
+        });
+      }
+      await new Promise<void>((resolve, reject) => {
+        this.worker.onmessage = () => {
+          resolve();
+          this.#maybeSendNextWorkerMessage();
+        };
+
+        this.worker.onerror = (e) => {
+          reject(e);
+          this.#maybeSendNextWorkerMessage();
+        };
+
+        this.worker.postMessage(msg);
+      });
       this.#state = DictState.loaded;
-      console.log("Generated index.");
     } catch (e) {
       console.log(e);
       this.#state = DictState.retry;
@@ -114,6 +126,12 @@ export class GcideDictionary implements IDictionarySync {
 
     this.listeners.forEach((l) => l());
     this.listeners = [];
-    return;
+  }
+
+  #maybeSendNextWorkerMessage(): void {
+    if (this.workerListeners.length == 0)
+      this.worker.onmessage = null;
+    else
+      this.workerListeners.shift()!();
   }
 }
