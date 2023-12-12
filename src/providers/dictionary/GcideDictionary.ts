@@ -8,7 +8,10 @@ const gcideUrl =
   "https://cdn.jsdelivr.net/gh/lwchkg/hello-dict-data@523fc6ae36fc110296dc881d02747a7d74f8b9de/gcide-0.51.json.oneidzst";
 const gcideIntegrity =
   "sha384-L038h5vs2+CvPbQmjSgOMIhe8t9pDwn0B3OaAcHOCwJU3QWzjTVPAsDZI+Qg36sE";
-const dicts: Map<string, GcideDictionary> = new Map();
+
+const dictionaryLoadFailMsg = "Unable to load dictionary.";
+
+let dict: GcideDictionary | null = null;
 
 function gcideTransformHtml(html: string): string {
   // Replace "<h2>[text1]</h2><br /><h2>[text2]</h2>" by
@@ -20,10 +23,8 @@ function gcideTransformHtml(html: string): string {
 }
 
 export class GcideDictionary implements IDictionary {
-  jsonData: { [x: string]: string[] } = {};
-  listeners: (() => void)[] = [];
-  mapping: Map<string, string[]> = new Map();
-  url: string = "";
+  initListeners: (() => void)[] = [];
+  url: string = gcideUrl;
   worker: Worker = new Worker(new URL(workerUrl, import.meta.url), {
     type: "module",
   });
@@ -31,31 +32,36 @@ export class GcideDictionary implements IDictionary {
 
   #state: DictState = DictState.uninitialized;
 
-  private constructor(url: string) {
-    this.url = url;
+  private constructor(testingDictUrl?: string) {
+    if (testingDictUrl) this.url = testingDictUrl;
     this.#initDict();
   }
 
-  static get(url: string = gcideUrl): GcideDictionary {
-    if (!dicts.has(url)) dicts.set(url, new GcideDictionary(url));
-    return dicts.get(url)!;
+  static get(): GcideDictionary {
+    if (dict === null) dict = new GcideDictionary();
+    return dict;
   }
 
   async findWord(word: string): Promise<string[] | null> {
     if (this.#state === DictState.loaded)
-      return Promise.resolve(this.findWordInner(word));
+      return Promise.resolve(this.#findWordInner(word));
     if (this.#state === DictState.permaError)
-      return Promise.reject("Unable to load dictionary.");
+      return Promise.reject(dictionaryLoadFailMsg);
 
     return new Promise((resolve, reject) => {
-      this.listeners.push(() => {
-        if (this.#state === DictState.loaded) resolve(this.findWordInner(word));
-        else reject("Unable to load dictionary.");
+      this.initListeners.push(() => {
+        if (this.#state === DictState.loaded)
+          resolve(this.#findWordInner(word));
+        else reject(dictionaryLoadFailMsg);
       });
     });
   }
 
-  async findWordInner(word: string): Promise<string[] | null> {
+  getState(): DictState {
+    return this.#state;
+  }
+
+  async #findWordInner(word: string): Promise<string[] | null> {
     if (
       this.#state === DictState.uninitialized ||
       this.#state === DictState.retry
@@ -65,11 +71,11 @@ export class GcideDictionary implements IDictionary {
     if (this.#state !== DictState.loaded) return null;
 
     if (this.worker.onmessage) {
-      await new Promise<void>(resolve => {
+      await new Promise<void>((resolve) => {
         this.workerListeners.push(() => resolve());
       });
     }
-    return await new Promise<string[]>(resolve => {
+    return await new Promise<string[]>((resolve) => {
       this.worker.onmessage = (msg: MessageEvent<string[]>) => {
         resolve(msg.data.map(gcideTransformHtml));
         this.#maybeSendNextWorkerMessage();
@@ -77,10 +83,6 @@ export class GcideDictionary implements IDictionary {
 
       this.worker.postMessage({ action: "find", word });
     });
-  }
-
-  getState(): DictState {
-    return this.#state;
   }
 
   async #initDict(): Promise<void> {
@@ -101,7 +103,7 @@ export class GcideDictionary implements IDictionary {
       if (this.url == gcideUrl) msg.integrity = gcideIntegrity;
 
       if (this.worker.onmessage) {
-        await new Promise<void>(resolve => {
+        await new Promise<void>((resolve) => {
           this.workerListeners.push(() => resolve());
         });
       }
@@ -124,14 +126,12 @@ export class GcideDictionary implements IDictionary {
       this.#state = DictState.retry;
     }
 
-    this.listeners.forEach((l) => l());
-    this.listeners = [];
+    this.initListeners.forEach((l) => l());
+    this.initListeners = [];
   }
 
   #maybeSendNextWorkerMessage(): void {
-    if (this.workerListeners.length == 0)
-      this.worker.onmessage = null;
-    else
-      this.workerListeners.shift()!();
+    if (this.workerListeners.length == 0) this.worker.onmessage = null;
+    else this.workerListeners.shift()!();
   }
 }
