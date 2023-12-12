@@ -6,8 +6,13 @@
   padding: 2rem;
 }
 
-.word-input, .word-input > * {
-  font-size: 1.5rem;
+.logo {
+  vertical-align: -10px;
+  padding-right: 2rem;
+}
+
+.logo path {
+  fill: var(--fg-color);
 }
 
 .word-input {
@@ -15,19 +20,20 @@
   border-radius: .25rem;
   display: inline-block;
   line-height: 1;
+  margin-top: 1rem;
 
   &:focus-within, &:hover {
-    outline: 2px solid orange;
+    outline: 2px solid var(--form-field-outline-color);
   }
 }
-
 
 .word-input > * {
   border: none;
 }
 
 .word-input, .word-input > * {
-  background-color: #333;
+  font-size: 1.5rem;
+  background-color: var(--form-field-bg-color);
 }
 
 .word-input > input:focus {
@@ -41,16 +47,21 @@
 
 .word-input > button {
   padding: .25rem .6rem;
-  background-color: rgb(153, 84, 0);
+  background-color: var(--button-bg-color);
   border-start-end-radius: calc(.25rem - 1px);
   border-end-end-radius: calc(.25rem - 1px);
 
   &:hover {
-    background-color: rgb(189, 104, 0);
+    background-color: var(--button-hover-bg-color);
   }
 }
 
-.logo {
-  font-size: 2rem;
-  padding-right: 2rem;
+.dict-result {
+  margin-top: 3rem;
+}
+
+.dict-result h2 {
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
 }

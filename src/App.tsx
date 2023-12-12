@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState } from "react";
 
 import "App.css";
+import AppLogo from "assets/hello-dict-icon.svg?react";
 import { DictEntries } from "components/DictEntries";
 import { GcideDictionary } from "providers/dictionary/GcideDictionary";
 
@@ -23,7 +24,7 @@ function App() {
 
   return (
     <>
-      <span className="logo">GCIDE dictionary</span>
+      <span className="logo"><AppLogo /></span>
       <form className="word-input" onSubmit={handleSubmit}>
         <input
           placeholder="Search the dictionary..."
