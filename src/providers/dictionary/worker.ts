@@ -35,7 +35,7 @@ let mapping: Map<string, string[]>;
 
 async function init(url: string, integrity?: string) {
   const response = integrity
-    ? await fetch(url, { integrity })
+    ? await fetch(url, { cache: "force-cache", integrity })
     : await fetch(url);
 
   console.log("Read data.");
