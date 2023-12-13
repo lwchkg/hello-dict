@@ -33,6 +33,7 @@
     "typescript": "^5.2.2",
     "vite": "^5.0.0",
     "vite-plugin-svgr": "^4.2.0",
+    "vite-plugin-wasm": "file:third_party/vite-plugin-wasm.tgz",
     "vite-tsconfig-paths": "^4.2.2"
   }
 }

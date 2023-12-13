@@ -1,4 +1,4 @@
-import { ZstdInit } from "@oneidentity/zstd-js/asm/decompress";
+import { ZstdInit } from "@oneidentity/zstd-js/wasm/decompress";
 
 import { toKey } from "./util_dictionary";
 
