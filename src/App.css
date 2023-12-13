@@ -1,14 +1,25 @@
+:root {
+  --padding: 2rem;
+}
+
 #root {
   width: 100%;
   max-width: 1280px;
   height: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--padding);
+  overflow-x: hidden;
 }
 
 .logo {
   vertical-align: -10px;
   padding-right: 2rem;
+}
+
+.logo svg {
+  width: 100%;
+  height: auto;
+  max-width: 213.199px;
 }
 
 .logo path {
@@ -18,9 +29,12 @@
 .word-input {
   border: 1px solid silver;
   border-radius: .25rem;
-  display: inline-block;
   line-height: 1;
   margin-top: 1rem;
+  box-sizing: border-box;
+  max-width: calc(100vw - var(--padding) * 2);
+
+  display: inline-flex;
 
   &:focus-within, &:hover {
     outline: 2px solid var(--form-field-outline-color);
@@ -43,6 +57,10 @@
 
 .word-input > input {
   padding-left: .25em;
+  flex: auto;
+  min-width: 0;
+  border-start-start-radius: calc(.25rem - 1px);
+  border-end-start-radius: calc(.25rem - 1px);
 }
 
 .word-input > button {
