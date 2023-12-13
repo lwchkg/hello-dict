@@ -1,15 +1,16 @@
 import { ZstdInit } from "@oneidentity/zstd-js/asm/decompress";
+
 import { toKey } from "./util_dictionary";
 
 type InitMessageType = {
-  action: "init",
-  integrity?: string,
-  url: string,
+  action: "init";
+  integrity?: string;
+  url: string;
 };
 
 type FindWordMessageType = {
-  action: "find",
-  word: string,
+  action: "find";
+  word: string;
 };
 
 export type MessageType = InitMessageType | FindWordMessageType;
@@ -33,11 +34,10 @@ let jsonData: Record<string, string[]> = {};
 let mapping: Map<string, string[]>;
 
 async function init(url: string, integrity?: string) {
-  const response =
-    integrity
-      ? await fetch(url, { integrity })
-      : await fetch(url);
-    
+  const response = integrity
+    ? await fetch(url, { integrity })
+    : await fetch(url);
+
   console.log("Read data.");
   const compressed = new Uint8Array(await response.arrayBuffer());
   const { ZstdSimple } = await ZstdInit();
@@ -56,8 +56,7 @@ async function init(url: string, integrity?: string) {
 }
 
 function findWord(word: string): void {
-  if (!initialized)
-    throw "Not initialized."
+  if (!initialized) throw "Not initialized.";
 
   const key = toKey(word);
 
