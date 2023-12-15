@@ -1,8 +1,8 @@
 import sanitizeHtml from "sanitize-html";
 
-import { DictState, IDictionary } from "./IDictionary";
+import { DictState, type IDictionary } from "./IDictionary";
 import workerUrl from "./worker.js?worker&url";
-import { MessageType } from "./worker.ts";
+import type { MessageType } from "./worker.ts";
 
 const gcideUrl =
   "https://cdn.jsdelivr.net/gh/lwchkg/hello-dict-data@523fc6ae36fc110296dc881d02747a7d74f8b9de/gcide-0.51.json.oneidzst";
@@ -24,7 +24,7 @@ function gcideTransformHtml(html: string): string {
 
 export class GcideDictionary implements IDictionary {
   initListeners: (() => void)[] = [];
-  url: string = gcideUrl;
+  readonly url: string = gcideUrl;
   worker: Worker = new Worker(new URL(workerUrl, import.meta.url), {
     type: "module",
   });

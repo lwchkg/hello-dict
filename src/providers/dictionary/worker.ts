@@ -30,7 +30,7 @@ function generateMapping(jsonData: dictRecord): Map<string, string[]> {
 }
 
 let initialized = false;
-let jsonData: Record<string, string[]> = {};
+let jsonData: dictRecord;
 let mapping: Map<string, string[]>;
 
 async function init(url: string, integrity?: string) {

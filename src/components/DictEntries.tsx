@@ -3,7 +3,7 @@ import sanitizeHtml from "sanitize-html";
 
 import { reactPromise } from "utils/reactPromise";
 
-const cache: Map<string, Promise<string[] | null>> = new Map();
+const cache = new Map<string, Promise<string[] | null>>();
 const dict = GcideDictionary.get();
 
 // The dictionary query must be cached for the promise to work.
