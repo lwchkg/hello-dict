@@ -1,5 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 
+import { wordToUrl } from "utils/routerUrl";
+
 import { DictState, type IDictionary } from "./IDictionary";
 import workerUrl from "./worker.js?worker&url";
 import type { MessageType } from "./worker.ts";
@@ -18,7 +20,17 @@ function gcideTransformHtml(html: string): string {
   // "<h2>[text1] | [text2]</h2>". Sanitize first because the html in the data
   // is not yet sanitized and may contain human errors.
   return sanitizeHtml(html, {
-    allowedAttributes: { a: [] },
+    transformTags: {
+      a: function (tagName, attribs) {
+        return {
+          tagName,
+          attribs: {
+            ...attribs,
+            href: wordToUrl(attribs.href),
+          },
+        };
+      },
+    },
   }).replace("</h2><br /><h2>", " | ");
 }
 

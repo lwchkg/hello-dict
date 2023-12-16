@@ -5,6 +5,8 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { About } from "routes/about";
 import { Word } from "routes/word";
 
+import { wordToUrl } from "utils/routerUrl";
+
 import AppLogo from "assets/hello-dict-icon.svg?react";
 
 function Router() {
@@ -27,7 +29,7 @@ function App() {
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
-    window.location.assign("#/word/" + encodeURIComponent(word));
+    window.location.assign(wordToUrl(word));
     e.preventDefault();
   }
 
