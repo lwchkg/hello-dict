@@ -32,21 +32,21 @@ async function getCompressedData(): Promise<Uint8Array> {
   return ZstdSimple.compress(uncompressed);
 }
 
-async function getTestingFileUrl() {
+async function getTestingDataUrl() {
   const compressed = await getCompressedData();
   return "data:text/plain;base64," + btoa(String.fromCodePoint(...compressed));
 }
 
 describe("GcideDictionary mock data test", () => {
-  let fileUrl = "";
+  let dataUrl = "";
 
   beforeAll(async () => {
-    fileUrl = await getTestingFileUrl();
+    dataUrl = await getTestingDataUrl();
   });
 
   test("Data content", async () => {
     //@ts-expect-error Access private constructor.
-    const dict: GcideDictionary = new GcideDictionary(fileUrl);
+    const dict: GcideDictionary = new GcideDictionary(dataUrl);
 
     expect(await dict.findWord("a")).toStrictEqual(testingDictData["a"]);
     expect(await dict.findWord("word")).toStrictEqual(testingDictData["word"]);
@@ -57,12 +57,12 @@ describe("GcideDictionary mock data test", () => {
 });
 
 describe("GcideDictionary slow fetch test", () => {
-  let fileUrl = "";
+  let dataUrl = "";
   let mockFunc = vi.fn();
   const realFetch = global.fetch;
 
   beforeAll(async () => {
-    fileUrl = await getTestingFileUrl();
+    dataUrl = await getTestingDataUrl();
   });
 
   beforeEach(() => {
@@ -78,7 +78,7 @@ describe("GcideDictionary slow fetch test", () => {
     mockFunc.mockImplementation(async (input, init?) => {
       if (input === "mock") {
         await waiter.promise;
-        return realFetch(fileUrl);
+        return realFetch(dataUrl);
       }
       // Do real fetch to load other resources, e.g. wasm modules.
       return realFetch(input, init);
