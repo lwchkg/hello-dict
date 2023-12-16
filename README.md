@@ -1,6 +1,10 @@
 # Hello Dict
 
-Dictionary frontend coded in React.js.
+Dictionary coded in React.js. Just type in the word in the box and search.
+
+Coded with ❤️ by WC Leung.
+
+## Credits
 
 Dictionary data from [GNU Collaborative International Dictionary of English](https://gcide.gnu.org.ua/), version 0.51.
 
