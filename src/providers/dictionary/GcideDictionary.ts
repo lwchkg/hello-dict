@@ -43,16 +43,25 @@ export class GcideDictionary implements IDictionary {
   }
 
   async findWord(word: string): Promise<string[] | null> {
-    if (this.#state === DictState.loaded)
-      return Promise.resolve(this.#findWordInner(word));
-    if (this.#state === DictState.permaError)
-      return Promise.reject(dictionaryLoadFailMsg);
+    if (
+      this.#state === DictState.uninitialized ||
+      this.#state === DictState.retry ||
+      this.#state === DictState.loaded
+    ) {
+      return this.#findWordInner(word);
+    }
+
+    if (this.#state === DictState.permaError) {
+      throw new Error(dictionaryLoadFailMsg);
+    }
 
     return new Promise((resolve, reject) => {
       this.initListeners.push(() => {
-        if (this.#state === DictState.loaded)
+        if (this.#state === DictState.loaded) {
           resolve(this.#findWordInner(word));
-        else reject(dictionaryLoadFailMsg);
+        } else {
+          reject(new Error(dictionaryLoadFailMsg));
+        }
       });
     });
   }
@@ -108,13 +117,12 @@ export class GcideDictionary implements IDictionary {
         });
       }
       await new Promise<void>((resolve, reject) => {
-        this.worker.onmessage = () => {
-          resolve();
-          this.#maybeSendNextWorkerMessage();
-        };
-
-        this.worker.onerror = (e) => {
-          reject(e);
+        this.worker.onmessage = (msg: MessageEvent<boolean | Error>) => {
+          if (msg.data === true) {
+            resolve();
+          } else {
+            reject(msg.data);
+          }
           this.#maybeSendNextWorkerMessage();
         };
 
@@ -122,7 +130,6 @@ export class GcideDictionary implements IDictionary {
       });
       this.#state = DictState.loaded;
     } catch (e) {
-      console.log(e);
       this.#state = DictState.retry;
     }
 
