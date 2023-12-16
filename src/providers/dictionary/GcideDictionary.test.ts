@@ -128,6 +128,32 @@ describe("GcideDictionary network test", () => {
     await dict.findWord("test");
     expect(dict.getState()).toBe(DictState.loaded);
   });
+
+  test("request to dictionary data must be made with subresource integrity", async () => {
+    let failed: boolean | string = false;
+
+    mockFunc.mockImplementation(async (input: string, init?) => {
+      if (input.startsWith("https://")) {
+        if (!init?.integrity?.length || init?.integrity.length === 0) {
+          failed = `No subresource integrity`;
+        }
+        return realFetch("data:text/plain,mock_data", init);
+      }
+      return realFetch(input, init);
+    });
+
+    //@ts-expect-error Access private constructor.
+    const dict: GcideDictionary = new GcideDictionary();
+
+    // Find a word to force dictionary initialization to finish.
+    try {
+      await dict.findWord("test");
+    } catch (_) {
+      /* Do nothing. Throwing is expected. */
+    }
+
+    expect(failed).toBeFalsy();
+  });
 });
 
 describe("GcideDictionary actual data test", () => {
