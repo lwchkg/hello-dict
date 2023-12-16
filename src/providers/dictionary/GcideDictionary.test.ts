@@ -56,7 +56,7 @@ describe("GcideDictionary mock data test", () => {
   });
 });
 
-describe("GcideDictionary slow fetch test", () => {
+describe("GcideDictionary network test", () => {
   let dataUrl = "";
   let mockFunc = vi.fn();
   const realFetch = global.fetch;
@@ -94,6 +94,38 @@ describe("GcideDictionary slow fetch test", () => {
     // Find a word to force dictionary initialization to finish.
     await dict.findWord("test");
 
+    expect(dict.getState()).toBe(DictState.loaded);
+  });
+
+  test("retry if fail to load", async () => {
+    // Mock function that causes fetch to fail.
+    mockFunc.mockImplementation(async (input, init?) => {
+      if (input === dataUrl) return realFetch("deadbeef");
+      return realFetch(input, init);
+    });
+
+    //@ts-expect-error Access private constructor.
+    const dict: GcideDictionary = new GcideDictionary(dataUrl);
+
+    // Find a word to force dictionary initialization to finish.
+    try {
+      await dict.findWord("test");
+    } catch (_) {
+      /* Do nothing. */
+    }
+
+    expect(dict.getState()).toBe(DictState.retry);
+
+    // First retry.
+    await dict.findWord("test");
+    expect(dict.getState()).toBe(DictState.retry);
+
+    // Second retry. Fetch should succeed.
+    mockFunc.mockImplementation(async (input, init?) => {
+      return realFetch(input, init);
+    });
+
+    await dict.findWord("test");
     expect(dict.getState()).toBe(DictState.loaded);
   });
 });

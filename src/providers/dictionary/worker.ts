@@ -34,12 +34,18 @@ let jsonData: dictRecord;
 let mapping: Map<string, string[]>;
 
 async function init(url: string, integrity?: string) {
-  const response = integrity
-    ? await fetch(url, { cache: "force-cache", integrity })
-    : await fetch(url);
+  let compressed: Uint8Array;
+  try {
+    const response = integrity
+      ? await fetch(url, { cache: "force-cache", integrity })
+      : await fetch(url);
 
-  console.log("Read data.");
-  const compressed = new Uint8Array(await response.arrayBuffer());
+    console.log("Read data.");
+    compressed = new Uint8Array(await response.arrayBuffer());
+  } catch (e) {
+    postMessage(e);
+    return;
+  }
   const { ZstdSimple } = await ZstdInit();
 
   const jsonByteArray = ZstdSimple.decompress(compressed);
