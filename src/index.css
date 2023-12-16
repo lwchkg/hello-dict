@@ -7,6 +7,7 @@
   --form-field-outline-color: orange;
   --button-bg-color: #995400;
   --button-hover-bg-color: #bd6800;
+  --word-form-color: #80ff80;
 
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -47,6 +48,7 @@ body {
     --form-field-outline-color: #eb9800;
     --button-bg-color: #e07b00;
     --button-hover-bg-color: #ff9514;
+    --word-form-color: #008000;
   }
   button {
     background-color: #f9f9f9;

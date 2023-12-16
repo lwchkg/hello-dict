@@ -28,7 +28,7 @@
 
 .word-input {
   border: 1px solid silver;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   line-height: 1;
   margin-top: 1rem;
   box-sizing: border-box;
@@ -36,7 +36,8 @@
 
   display: inline-flex;
 
-  &:focus-within, &:hover {
+  &:focus-within,
+  &:hover {
     outline: 2px solid var(--form-field-outline-color);
   }
 }
@@ -45,7 +46,8 @@
   border: none;
 }
 
-.word-input, .word-input > * {
+.word-input,
+.word-input > * {
   font-size: 1.5rem;
   background-color: var(--form-field-bg-color);
 }
@@ -56,18 +58,18 @@
 }
 
 .word-input > input {
-  padding-left: .25em;
+  padding-left: 0.25em;
   flex: auto;
   min-width: 0;
-  border-start-start-radius: calc(.25rem - 1px);
-  border-end-start-radius: calc(.25rem - 1px);
+  border-start-start-radius: calc(0.25rem - 1px);
+  border-end-start-radius: calc(0.25rem - 1px);
 }
 
 .word-input > button {
-  padding: .25rem .6rem;
+  padding: 0.25rem 0.6rem;
   background-color: var(--button-bg-color);
-  border-start-end-radius: calc(.25rem - 1px);
-  border-end-end-radius: calc(.25rem - 1px);
+  border-start-end-radius: calc(0.25rem - 1px);
+  border-end-end-radius: calc(0.25rem - 1px);
 
   &:hover {
     background-color: var(--button-hover-bg-color);
@@ -82,4 +84,99 @@ main {
   margin: 0;
   padding: 0;
   line-height: 1.2;
+}
+
+.dict-item .source {
+  font-size: 0.7em;
+}
+
+.dict-item .pos {
+  color: var(--word-form-color);
+  font-weight: bold;
+}
+
+.dict-item .hw, .dict-item .sn {
+  font-weight: bold;
+}
+
+.dict-item .q,
+.dict-item .it,
+.dict-item .ant,
+.dict-item .asp,
+.dict-item .booki,
+.dict-item .causedby,
+.dict-item .cnvto,
+.dict-item .compof,
+.dict-item .contr,
+.dict-item .cref,
+.dict-item .film,
+.dict-item .fld,
+.dict-item .itran,
+.dict-item .itrans,
+.dict-item .abbr,
+.dict-item .altname,
+.dict-item .altnpluf,
+.dict-item .ets,
+.dict-item .etsep,
+.dict-item .ex,
+.dict-item .mark,
+.dict-item .qex,
+.dict-item .sd,
+.dict-item .ship,
+.dict-item .source,
+.dict-item .pluf,
+.dict-item .uex,
+.dict-item .isa,
+.dict-item .mathex,
+.dict-item .ratio,
+.dict-item .singf,
+.dict-item .xlati,
+.dict-item .tran,
+.dict-item .tr,
+.dict-item .iref,
+.dict-item .figref,
+.dict-item .ptcl,
+.dict-item .title,
+.dict-item .stype,
+.dict-item .part,
+.dict-item .parts,
+.dict-item .membof,
+.dict-item .member,
+.dict-item .members,
+.dict-item .corr,
+.dict-item .qperson,
+.dict-item .prod,
+.dict-item .prodmac,
+.dict-item .stage,
+.dict-item .inv,
+.dict-item .methodfor,
+.dict-item .examp,
+.dict-item .unit,
+.dict-item .uses,
+.dict-item .usedby,
+.dict-item .perf,
+.dict-item .recipr,
+.dict-item .sig,
+.dict-item .wns,
+.dict-item .w16ns,
+.dict-item .spn,
+.dict-item .kingdom,
+.dict-item .phylum,
+.dict-item .subphylum,
+.dict-item .class,
+.dict-item .subclass,
+.dict-item .ord,
+.dict-item .subord,
+.dict-item .suborder,
+.dict-item .fam,
+.dict-item .subfam,
+.dict-item .gen,
+.dict-item .var,
+.dict-item .varn {
+  font-style: italic;
+}
+
+.dict-item .qau, .dict-item .au {
+  font-weight: bold;
+  font-style: italic;
 }
