@@ -14,7 +14,7 @@ function getCachedWords(word: string): Promise<string[] | null> {
 
 function sanitize(html: string): string {
   return sanitizeHtml(html, {
-    allowedAttributes: { a: [] },
+    allowedAttributes: { a: ["href", "name", "target"] },
   });
 }
 
