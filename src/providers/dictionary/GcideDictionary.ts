@@ -15,20 +15,43 @@ const dictionaryLoadFailMsg = "Unable to load dictionary.";
 
 let dict: GcideDictionary | null = null;
 
+// prettier-ignore
+const tagToClass = ["pos", "hw", "sn", "q", "it", "ant", "asp", "booki",
+"causedby", "cnvto", "compof", "contr", "cref", "film", "fld", "itran",
+"itrans", "abbr", "altname", "altnpluf", "ets", "etsep", "ex", "mark", "qex",
+"sd", "ship", "source", "pluf", "uex", "isa", "mathex", "ratio", "singf",
+"xlati", "tran", "tr", "iref", "figref", "ptcl", "title", "stype", "part",
+"parts", "membof", "member", "members", "corr", "qperson", "prod", "prodmac",
+"stage", "inv", "methodfor", "examp", "unit", "uses", "usedby", "perf",
+"recipr", "sig", "wns", "w16ns", "spn", "kingdom", "phylum", "subphylum",
+"class", "subclass", "ord", "subord", "suborder", "fam", "subfam", "gen", "var",
+"varn", "qau", "au"];
+
 function gcideTransformHtml(html: string): string {
   // Replace "<h2>[text1]</h2><br /><h2>[text2]</h2>" by
   // "<h2>[text1] | [text2]</h2>". Sanitize first because the html in the data
   // is not yet sanitized and may contain human errors.
+  html = html
+    .replace(/\[<source>/g, "<source1>[")
+    .replace(/<\/source>]/g, "]</source1>");
+
   return sanitizeHtml(html, {
+    allowedAttributes: { "*": ["class"], a: ["href"] },
     transformTags: {
-      a: function (tagName, attribs) {
-        return {
-          tagName,
-          attribs: {
-            ...attribs,
-            href: wordToUrl(attribs.href),
-          },
-        };
+      "*": function (tagName, attribs) {
+        if (tagName === "a") {
+          return {
+            tagName,
+            attribs: { ...attribs, href: wordToUrl(attribs.href) },
+          };
+        }
+        if (tagName === "source1") {
+          return { tagName: "span", attribs: { ...attribs, class: "source" } };
+        }
+        if (tagToClass.includes(tagName)) {
+          return { tagName: "span", attribs: { ...attribs, class: tagName } };
+        }
+        return { tagName, attribs };
       },
     },
   }).replace("</h2><br /><h2>", " | ");
