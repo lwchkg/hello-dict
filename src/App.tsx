@@ -5,6 +5,8 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { About } from "routes/about";
 import { Word } from "routes/word";
 
+import { DarkModeToggle } from "components/DarkModeToggle";
+
 import { wordToUrl } from "utils/routerUrl";
 
 import AppLogo from "assets/hello-dict-icon.svg?react";
@@ -42,6 +44,7 @@ function App() {
       <span className="logo">
         <AppLogo />
       </span>
+      <DarkModeToggle />
       <form className="word-input" onSubmit={handleSubmit}>
         <input
           placeholder="Search the dictionary..."

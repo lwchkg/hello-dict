@@ -27,7 +27,7 @@
 }
 
 .word-input {
-  border: 1px solid silver;
+  border: 1px solid var(--form-field-border-color);
   border-radius: 0.25rem;
   line-height: 1;
   margin-top: 1rem;
