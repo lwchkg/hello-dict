@@ -25,7 +25,7 @@ const tagToClass = ["pos", "hw", "sn", "q", "it", "ant", "asp", "booki",
 "stage", "inv", "methodfor", "examp", "unit", "uses", "usedby", "perf",
 "recipr", "sig", "wns", "w16ns", "spn", "kingdom", "phylum", "subphylum",
 "class", "subclass", "ord", "subord", "suborder", "fam", "subfam", "gen", "var",
-"varn", "qau", "au"];
+"varn", "qau", "au", "ety"];
 
 function gcideTransformHtml(html: string): string {
   // Replace "<h2>[text1]</h2><br /><h2>[text2]</h2>" by
@@ -54,7 +54,10 @@ function gcideTransformHtml(html: string): string {
         return { tagName, attribs };
       },
     },
-  }).replace("</h2><br /><h2>", " | ");
+  })
+    .replace(/<\/h2><br \/><h2>/g, " | ")
+    .replace(/<br \/>/g, "")
+    .replace(/<span class="sn">1\./g, '</p><p><span class="sn">1.');
 }
 
 export class GcideDictionary implements IDictionary {
