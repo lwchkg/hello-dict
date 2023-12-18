@@ -70,8 +70,10 @@
   background-color: var(--button-bg-color);
   border-start-end-radius: calc(0.25rem - 1px);
   border-end-end-radius: calc(0.25rem - 1px);
+}
 
-  &:hover {
+@media (hover: hover) {
+  .word-input > button:hover {
     background-color: var(--button-hover-bg-color);
   }
 }

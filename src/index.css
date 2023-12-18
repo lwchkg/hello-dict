@@ -59,7 +59,7 @@ body {
 
 ::placeholder {
   color: var(--fg-color);
-  opacity: .5
+  opacity: 0.5;
 }
 
 @media (prefers-color-scheme: light) {
