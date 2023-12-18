@@ -1,0 +1,13 @@
+.dark-mode-toggle {
+  float: inline-end;
+  height: 40px;
+  width: 40px;
+  border: none;
+  color: var(--text-color);
+  background-color: inherit;
+  border-radius: .25rem;
+}
+
+.dark-mode-toggle:hover {
+  background-color: var(--form-field-bg-color);
+}

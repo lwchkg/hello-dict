@@ -5,6 +5,8 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { About } from "routes/about";
 import { Word } from "routes/word";
 
+import { DarkModeToggle } from "components/DarkModeToggle";
+
 import { wordToUrl } from "utils/routerUrl";
 
 import AppLogo from "assets/hello-dict-icon.svg?react";
@@ -50,6 +52,7 @@ function App() {
         />
         <button type="submit">&gt;</button>
       </form>
+      <DarkModeToggle />
       <main>
         <Router />
       </main>

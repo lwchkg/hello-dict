@@ -4,12 +4,13 @@
   --link-color: #ff8c00;
   --link-hover-color: #ff9e27;
   --form-field-bg-color: #333;
+  --form-field-border-color: #a0a0a0;
   --form-field-outline-color: orange;
   --button-bg-color: #995400;
   --button-hover-bg-color: #bd6800;
   --word-form-color: #80ff80;
   --etymology-color: #a0a0a0;
-  --example-color: hsl(302, 61%, 65%);
+  --example-color: #dc6fd9;
 
   line-height: 1.5;
   font-weight: 400;
@@ -24,8 +25,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-:root, select.textarea, input, button {
-  font-family: "Fira Sans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+:root,
+select.textarea,
+input,
+button {
+  font-family: "Fira Sans", Inter, system-ui, Avenir, Helvetica, Arial,
+    sans-serif;
+  color: var(--fg-color);
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 a {
@@ -43,6 +57,11 @@ body {
   place-items: start;
 }
 
+::placeholder {
+  color: var(--fg-color);
+  opacity: .5
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     --fg-color: #213547;
@@ -50,14 +69,42 @@ body {
     --link-color: #ad5f00;
     --link-hover-color: #804600;
     --form-field-bg-color: white;
+    --form-field-border-color: #c0c0c0;
     --form-field-outline-color: #eb9800;
-    --button-bg-color: rgb(224, 123, 0);
+    --button-bg-color: #e07b00;
     --button-hover-bg-color: #ff9514;
     --word-form-color: #008000;
     --etymology-color: #707070;
     --example-color: #862d83;
   }
-  button {
-    background-color: #f9f9f9;
-  }
+}
+
+:root.dark-mode {
+  --fg-color: white;
+  --bg-color: #242424;
+  --link-color: #ff8c00;
+  --link-hover-color: #ff9e27;
+  --form-field-bg-color: #333;
+  --form-field-border-color: #a0a0a0;
+  --form-field-outline-color: orange;
+  --button-bg-color: #995400;
+  --button-hover-bg-color: #bd6800;
+  --word-form-color: #80ff80;
+  --etymology-color: #a0a0a0;
+  --example-color: #dc6fd9;
+}
+
+:root.light-mode {
+  --fg-color: #213547;
+  --bg-color: #f4f4f4;
+  --link-color: #ad5f00;
+  --link-hover-color: #804600;
+  --form-field-bg-color: white;
+  --form-field-border-color: #c0c0c0;
+  --form-field-outline-color: #eb9800;
+  --button-bg-color: #e07b00;
+  --button-hover-bg-color: #ff9514;
+  --word-form-color: #008000;
+  --etymology-color: #707070;
+  --example-color: #862d83;
 }
