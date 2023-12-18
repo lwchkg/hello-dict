@@ -1,13 +1,15 @@
 :root {
   --fg-color: white;
   --bg-color: #242424;
-  --link-color: #646cff;
-  --link-hover-color: #535bf2;
+  --link-color: #ff8c00;
+  --link-hover-color: #ff9e27;
   --form-field-bg-color: #333;
   --form-field-outline-color: orange;
   --button-bg-color: #995400;
   --button-hover-bg-color: #bd6800;
   --word-form-color: #80ff80;
+  --etymology-color: #a0a0a0;
+  --example-color: hsl(302, 61%, 65%);
 
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -26,7 +28,6 @@
 a {
   font-weight: 500;
   color: var(--link-color);
-  text-decoration: inherit;
 }
 a:hover {
   color: var(--link-hover-color);
@@ -42,13 +43,15 @@ body {
   :root {
     --fg-color: #213547;
     --bg-color: #f4f4f4;
-    --link-color: #646cff;
-    --link-hover-color: #747bff;
+    --link-color: #ad5f00;
+    --link-hover-color: #804600;
     --form-field-bg-color: white;
     --form-field-outline-color: #eb9800;
-    --button-bg-color: #e07b00;
+    --button-bg-color: rgb(224, 123, 0);
     --button-hover-bg-color: #ff9514;
     --word-form-color: #008000;
+    --etymology-color: #707070;
+    --example-color: #862d83;
   }
   button {
     background-color: #f9f9f9;

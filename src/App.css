@@ -80,8 +80,8 @@ main {
   margin-top: 3rem;
 }
 
-.dict-result h2 {
-  margin: 0;
+.dict-item h2 {
+  margin: 2rem 0 1rem;
   padding: 0;
   line-height: 1.2;
 }
@@ -95,7 +95,8 @@ main {
   font-weight: bold;
 }
 
-.dict-item .hw, .dict-item .sn {
+.dict-item .hw,
+.dict-item .sn {
   font-weight: bold;
 }
 
@@ -176,7 +177,21 @@ main {
   font-style: italic;
 }
 
-.dict-item .qau, .dict-item .au {
+.dict-item .qau,
+.dict-item .au {
   font-weight: bold;
   font-style: italic;
+}
+
+.dict-item .ety {
+  color: var(--etymology-color);
+}
+
+.dict-item .source {
+  margin-left: 2em;
+}
+
+.dict-item .q,
+.dict-item .qau {
+  color: var(--example-color);
 }
