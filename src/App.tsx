@@ -44,6 +44,7 @@ function App() {
       <span className="logo">
         <AppLogo />
       </span>
+      <DarkModeToggle />
       <form className="word-input" onSubmit={handleSubmit}>
         <input
           placeholder="Search the dictionary..."
@@ -52,7 +53,6 @@ function App() {
         />
         <button type="submit">&gt;</button>
       </form>
-      <DarkModeToggle />
       <main>
         <Router />
       </main>
