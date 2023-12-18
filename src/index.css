@@ -11,7 +11,6 @@
   --etymology-color: #a0a0a0;
   --example-color: hsl(302, 61%, 65%);
 
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -25,12 +24,17 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root, select.textarea, input, button {
+  font-family: "Fira Sans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
 a {
   font-weight: 500;
   color: var(--link-color);
 }
 a:hover {
   color: var(--link-hover-color);
+  text-decoration-thickness: 2px;
 }
 
 body {
