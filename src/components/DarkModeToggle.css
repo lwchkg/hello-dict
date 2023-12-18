@@ -5,9 +5,11 @@
   border: none;
   color: var(--text-color);
   background-color: inherit;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
 }
 
-.dark-mode-toggle:hover {
-  background-color: var(--form-field-bg-color);
+@media (hover: hover) {
+  .dark-mode-toggle:hover {
+    background-color: var(--form-field-bg-color);
+  }
 }
