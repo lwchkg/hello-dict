@@ -32,7 +32,7 @@ function App() {
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
-    window.location.assign(wordToUrl(word));
+    window.location.assign(word !== "" ? wordToUrl(word) : "#");
     e.preventDefault();
   }
 
