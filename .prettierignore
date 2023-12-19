@@ -1,2 +1,5 @@
 # Files in assets directory should not pretty formatted.
-assets/*
+src/assets/*
+.*/*
+index.html
+README.md

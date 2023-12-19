@@ -7,9 +7,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "prettier": "prettier --write",
+    "prettier": "prettier --write .",
+    "prettier-lint": "prettier --check .",
     "preview": "vite preview",
-    "test": "npm run lint && npm run vitest",
+    "test": "npm run vitest && npm run lint && npm run prettier-lint",
     "vitest": "vitest --run"
   },
   "dependencies": {
