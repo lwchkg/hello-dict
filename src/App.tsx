@@ -1,4 +1,4 @@
-import "App.css";
+import "App.less";
 import { GcideDictionary } from "providers/dictionary/GcideDictionary";
 import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
