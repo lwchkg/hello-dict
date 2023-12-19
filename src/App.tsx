@@ -18,6 +18,7 @@ function Router() {
         <Route path="/" element={<About />}></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/word/:word" element={<Word />}></Route>
+        <Route path="*" element={<About />}></Route>
       </Routes>
     </HashRouter>
   );
