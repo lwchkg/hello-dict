@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 
 import { DictEntries } from "components/DictEntries";
 
+import { setTitleWithPrefix } from "utils/setTitle";
+
 function Fallback() {
   const pause = 100;
   const [isShowing, setIsShowing] = useState(false);
@@ -19,6 +21,7 @@ export function Word() {
   if (!word) word = "";
 
   const deferredWord = useDeferredValue(word);
+  setTitleWithPrefix(deferredWord);
   return (
     <Suspense fallback={Fallback()}>
       <DictEntries word={deferredWord} />

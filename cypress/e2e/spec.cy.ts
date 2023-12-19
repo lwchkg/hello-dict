@@ -11,6 +11,7 @@ describe("Hello Dict app", () => {
     // The dictionary entries should load with an entry with the word.
     // Comparison is not case-sensitive because GCIDE capitalizes headwords.
     cy.get(".dict-item").contains(/\btest\b/i);
+    cy.title().should("include", "test");
   });
 
   it("Type in a word and press the button should load the dictionary entries.", () => {
@@ -22,6 +23,7 @@ describe("Hello Dict app", () => {
     // The dictionary entries should load with an entry with the word.
     // Comparison is not case-sensitive because GCIDE capitalizes headwords.
     cy.get(".dict-item").contains(/\btest\b/i);
+    cy.title().should("include", "test");
   });
 
   it("Visit #/word/:word should load the dictionary entries. A second visit should not reload dictionary data.", () => {
@@ -30,10 +32,13 @@ describe("Hello Dict app", () => {
     // The dictionary entries should load with an entry with the word.
     // Comparison is not case-sensitive because GCIDE capitalizes headwords.
     cy.get(".dict-item").contains(/\btest\b/i);
+    cy.title().should("include", "test");
 
     cy.visit("#/word/study");
     // The second visit should load instantiously.
     cy.get(".dict-item").contains(/\bstudy\b/i, { timeout: 100 });
+    cy.title().should("not.include", "test");
+    cy.title().should("include", "study");
   });
 
   it("Search with an empty textbox should navigate to somewhere other than #/word/ .", () => {
@@ -42,5 +47,6 @@ describe("Hello Dict app", () => {
     // The browser should navigate to a new URL (no "about").
     cy.hash().should("not.include", "about");
     cy.hash().should("not.include", "word");
+    cy.title().should("not.include", "- Hello");
   });
 });
