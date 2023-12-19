@@ -34,6 +34,11 @@ let jsonData: dictRecord;
 let mapping: Map<string, string[]>;
 
 async function init(url: string, integrity?: string) {
+  // Start initializing module before fetching data to take advantage of
+  // parallelism.
+  const zstdPromise = ZstdInit();
+
+  console.time("Fetch data");
   let compressed: Uint8Array;
   try {
     const response = integrity
@@ -46,15 +51,25 @@ async function init(url: string, integrity?: string) {
     postMessage(e);
     return;
   }
-  const { ZstdSimple } = await ZstdInit();
+  console.timeEnd("Fetch data");
 
+  const { ZstdSimple } = await zstdPromise;
+
+  console.time("Decompress data");
   const jsonByteArray = ZstdSimple.decompress(compressed);
-  const jsonString = new TextDecoder().decode(jsonByteArray);
-  jsonData = JSON.parse(jsonString);
+  console.timeEnd("Decompress data");
 
-  console.log("Parsed data.");
+  console.time("Convert to string");
+  const jsonString = new TextDecoder().decode(jsonByteArray);
+  console.timeEnd("Convert to string");
+
+  console.time("JSON parse");
+  jsonData = JSON.parse(jsonString);
+  console.timeEnd("JSON parse");
+
+  console.time("Generate index");
   mapping = generateMapping(jsonData);
-  console.log("Generated index.");
+  console.timeEnd("Generate index");
 
   initialized = true;
 
