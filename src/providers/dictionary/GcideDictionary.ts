@@ -7,9 +7,9 @@ import workerUrl from "./worker.js?worker&url";
 import type { MessageType } from "./worker.ts";
 
 const gcideUrl =
-  "https://cdn.jsdelivr.net/gh/lwchkg/hello-dict-data@523fc6ae36fc110296dc881d02747a7d74f8b9de/gcide-0.51.json.oneidzst";
+  "https://cdn.jsdelivr.net/gh/lwchkg/hello-dict-data@c9208f18aeb218b9b2a7ad911def1e29c41088c4/gcide-0.51-cleaned.json.oneidzst";
 const gcideIntegrity =
-  "sha384-L038h5vs2+CvPbQmjSgOMIhe8t9pDwn0B3OaAcHOCwJU3QWzjTVPAsDZI+Qg36sE";
+  "sha384-M6NIA0mb6JAC2nPnH+NllpKx5JL8+ZSc9hcKYqMf+XhambiFneWjI11K/LQeBje0";
 
 const dictionaryLoadFailMsg = "Unable to load dictionary.";
 
