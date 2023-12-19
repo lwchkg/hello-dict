@@ -1,0 +1,201 @@
+:root {
+  --padding: 2rem;
+}
+
+#root {
+  width: 100%;
+  max-width: 1280px;
+  height: 100%;
+  margin: 0 auto;
+  padding: var(--padding);
+  overflow-x: hidden;
+}
+
+.logo {
+  vertical-align: -10px;
+  padding-right: 2rem;
+
+  & svg {
+    width: 100%;
+    height: auto;
+    max-width: 213.199px;
+  }
+
+  & path {
+    fill: var(--fg-color);
+  }
+}
+
+.word-input {
+  border: 1px solid var(--form-field-border-color);
+  border-radius: 0.25rem;
+  line-height: 1;
+  margin-top: 1rem;
+  box-sizing: border-box;
+  max-width: calc(100vw - var(--padding) * 2);
+
+  display: inline-flex;
+
+  &:focus-within,
+  &:hover {
+    outline: 2px solid var(--form-field-outline-color);
+  }
+
+  & > * {
+    border: none;
+  }
+
+  &,
+  & > * {
+    font-size: 1.5rem;
+    background-color: var(--form-field-bg-color);
+  }
+
+  & > input {
+    padding-left: 0.25em;
+    flex: auto;
+    min-width: 0;
+    border-start-start-radius: calc(0.25rem - 1px);
+    border-end-start-radius: calc(0.25rem - 1px);
+
+    &:focus {
+      border: none;
+      outline: none;
+    }
+  }
+
+  & > button {
+    padding: 0.25rem 0.6rem;
+    background-color: var(--button-bg-color);
+    border-start-end-radius: calc(0.25rem - 1px);
+    border-end-end-radius: calc(0.25rem - 1px);
+  }
+}
+
+@media (hover: hover) {
+  .word-input > button:hover {
+    background-color: var(--button-hover-bg-color);
+  }
+}
+
+main {
+  margin-top: 3rem;
+}
+
+.dict-item {
+  & h2 {
+    margin: 2rem 0 1rem;
+    padding: 0;
+    line-height: 1.2;
+  }
+
+  & .source {
+    font-size: 0.7em;
+  }
+
+  & .pos {
+    color: var(--word-form-color);
+    font-weight: bold;
+  }
+
+  & .hw,
+  & .sn {
+    font-weight: bold;
+  }
+
+  & .q,
+  & .it,
+  & .ant,
+  & .asp,
+  & .booki,
+  & .causedby,
+  & .cnvto,
+  & .compof,
+  & .contr,
+  & .cref,
+  & .film,
+  & .fld,
+  & .itran,
+  & .itrans,
+  & .abbr,
+  & .altname,
+  & .altnpluf,
+  & .ets,
+  & .etsep,
+  & .ex,
+  & .mark,
+  & .qex,
+  & .sd,
+  & .ship,
+  & .source,
+  & .pluf,
+  & .uex,
+  & .isa,
+  & .mathex,
+  & .ratio,
+  & .singf,
+  & .xlati,
+  & .tran,
+  & .tr,
+  & .iref,
+  & .figref,
+  & .ptcl,
+  & .title,
+  & .stype,
+  & .part,
+  & .parts,
+  & .membof,
+  & .member,
+  & .members,
+  & .corr,
+  & .qperson,
+  & .prod,
+  & .prodmac,
+  & .stage,
+  & .inv,
+  & .methodfor,
+  & .examp,
+  & .unit,
+  & .uses,
+  & .usedby,
+  & .perf,
+  & .recipr,
+  & .sig,
+  & .wns,
+  & .w16ns,
+  & .spn,
+  & .kingdom,
+  & .phylum,
+  & .subphylum,
+  & .class,
+  & .subclass,
+  & .ord,
+  & .subord,
+  & .suborder,
+  & .fam,
+  & .subfam,
+  & .gen,
+  & .var,
+  & .varn {
+    font-style: italic;
+  }
+
+  & .qau,
+  & .au {
+    font-weight: bold;
+    font-style: italic;
+  }
+
+  & .ety {
+    color: var(--etymology-color);
+  }
+
+  & .source {
+    margin-left: 2em;
+  }
+
+  & .q,
+  & .qau {
+    color: var(--example-color);
+  }
+}
