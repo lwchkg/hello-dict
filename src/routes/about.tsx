@@ -1,4 +1,7 @@
+import { setTitleWithPrefix } from "utils/setTitle";
+
 export function About() {
+  setTitleWithPrefix();
   return (
     <>
       <h1>Hello Dict</h1>
