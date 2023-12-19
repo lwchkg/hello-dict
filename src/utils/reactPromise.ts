@@ -6,7 +6,7 @@ type augmentedPromise<T> = Promise<T> & {
 
 // This is code copied from React official documentation.
 // TODO: replace with real implementation when the bug is fixed.
-export function reactPromise<T>(promise: Promise<T>): Promise<T> | T {
+export function reactPromise<T>(promise: Promise<T>): T {
   const augPromise = promise as augmentedPromise<T>;
 
   if (augPromise.status === "fulfilled") {

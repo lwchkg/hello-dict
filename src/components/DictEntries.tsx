@@ -27,7 +27,7 @@ export function DictEntries({ word }: { word: string }) {
     );
   }
 
-  const definitions = reactPromise(getCachedWords(word)) as string[] | null;
+  const definitions = reactPromise(getCachedWords(word));
 
   if (definitions === null) {
     return (
