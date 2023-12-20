@@ -1,0 +1,35 @@
+{
+  "name": "Hello Dict - free dictionary",
+  "short_name": "Hello Dict",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#242424",
+  "theme_color": "#242424",
+  "description": "Dictionary coded in React.js. Just type in the word in the box and search. Coded with ❤️ by WC Leung.",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
