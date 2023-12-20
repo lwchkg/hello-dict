@@ -1,5 +1,7 @@
 .dark-mode-toggle {
-  float: right;
+  position: absolute;
+  right: -8px;
+  top: -3px;
   height: 40px;
   width: 40px;
   border: none;
