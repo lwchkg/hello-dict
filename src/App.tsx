@@ -42,18 +42,20 @@ function App() {
 
   return (
     <>
-      <span className="logo">
-        <AppLogo />
-      </span>
-      <DarkModeToggle />
-      <form className="word-input" onSubmit={handleSubmit}>
-        <input
-          placeholder="Search the dictionary..."
-          onChange={handleChange}
-          value={word}
-        />
-        <button type="submit">&gt;</button>
-      </form>
+      <header>
+        <span className="logo">
+          <AppLogo />
+        </span>
+        <DarkModeToggle />
+        <form className="word-input" onSubmit={handleSubmit}>
+          <input
+            placeholder="Search the dictionary..."
+            onChange={handleChange}
+            value={word}
+          />
+          <button type="submit">&gt;</button>
+        </form>
+      </header>
       <main>
         <Router />
       </main>
