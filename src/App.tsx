@@ -3,11 +3,12 @@ import { GcideDictionary } from "providers/dictionary/GcideDictionary";
 import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { About } from "routes/about";
+import { Search } from "routes/search";
 import { Word } from "routes/word";
 
 import { DarkModeToggle } from "components/DarkModeToggle";
 
-import { wordToUrl } from "utils/routerUrl";
+import { patternToUrl, wordToUrl } from "utils/routerUrl";
 
 import AppLogo from "assets/hello-dict-icon.svg?react";
 
@@ -18,6 +19,7 @@ function Router() {
         <Route path="/" element={<About />}></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/word/:word" element={<Word />}></Route>
+        <Route path="/search/:pattern" element={<Search />}></Route>
         <Route path="*" element={<About />}></Route>
       </Routes>
     </HashRouter>
@@ -32,7 +34,13 @@ function App() {
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
-    window.location.assign(word !== "" ? wordToUrl(word) : "#");
+    window.location.assign(
+      word !== ""
+        ? /[?*]/.test(word)
+          ? patternToUrl(word)
+          : wordToUrl(word)
+        : "#",
+    );
     e.preventDefault();
   }
 

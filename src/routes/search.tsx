@@ -1,20 +1,20 @@
 import { Suspense, useDeferredValue } from "react";
 import { useParams } from "react-router-dom";
 
-import { DictEntries } from "components/DictEntries";
 import { DictLoadingFallback } from "components/DictLoadingFallback";
+import { SearchResult } from "components/SearchResult";
 
 import { setTitleWithPrefix } from "utils/setTitle";
 
-export function Word() {
-  let { word } = useParams();
-  if (!word) word = "";
+export function Search() {
+  let { pattern } = useParams();
+  if (!pattern) pattern = "";
 
-  const deferredWord = useDeferredValue(word);
-  setTitleWithPrefix(deferredWord);
+  const deferredterm = useDeferredValue(pattern);
+  setTitleWithPrefix(deferredterm);
   return (
     <Suspense fallback={DictLoadingFallback()}>
-      <DictEntries word={deferredWord} />
+      <SearchResult pattern={deferredterm} />
     </Suspense>
   );
 }

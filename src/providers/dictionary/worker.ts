@@ -13,25 +13,34 @@ type FindWordMessageType = {
   word: string;
 };
 
-export type MessageType = InitMessageType | FindWordMessageType;
+type PatternMatchMessageType = {
+  action: "pattern_match";
+  pattern: string;
+};
+
+export type MessageType =
+  | InitMessageType
+  | FindWordMessageType
+  | PatternMatchMessageType;
 
 type dictRecord = Record<string, string[]>;
 
-function generateMapping(jsonData: dictRecord): Map<string, string[]> {
-  const mapping = new Map();
-
-  Object.keys(jsonData).forEach((word: string) => {
-    const key = toKey(word);
-    if (!mapping.has(key)) mapping.set(key, [word]);
-    else mapping.get(key)?.push(word);
-  });
-
-  return mapping;
-}
-
 let initialized = false;
 let jsonData: dictRecord;
-let mapping: Map<string, string[]>;
+const mapping = new Map<string, string[]>();
+const wordList: string[] = [];
+
+function generateMappingAndWordList(jsonData: dictRecord): void {
+  Object.keys(jsonData).forEach((word: string) => {
+    const key = toKey(word);
+    if (!mapping.has(key)) {
+      mapping.set(key, [word]);
+      wordList.push(word.toLowerCase());
+    } else {
+      mapping.get(key)?.push(word);
+    }
+  });
+}
 
 async function init(url: string, integrity?: string) {
   // Start initializing module before fetching data to take advantage of
@@ -66,7 +75,7 @@ async function init(url: string, integrity?: string) {
   console.timeEnd("JSON parse");
 
   console.time("Generate index");
-  mapping = generateMapping(jsonData);
+  generateMappingAndWordList(jsonData);
   console.timeEnd("Generate index");
 
   initialized = true;
@@ -86,11 +95,27 @@ function findWord(word: string): void {
   self.postMessage(result);
 }
 
+function patternMatch(pattern: string): void {
+  if (!initialized) throw "Not initialized.";
+
+  // Replace "*" by ".*", "?" by ".", prepend "\" for all other special chars.
+  const transformed = pattern
+    .toLowerCase()
+    .replace(/[/\\^$.|?*+()[\]{}]/g, (c) =>
+      c === "*" ? ".*" : c === "?" ? "." : "\\" + c,
+    );
+  const re = RegExp(`^${transformed}$`);
+
+  self.postMessage(wordList.filter((word) => re.test(word)));
+}
+
 self.onmessage = (msg: MessageEvent<MessageType>) => {
   if (msg.data.action === "init") {
     init(msg.data.url, msg.data.integrity);
   } else if (msg.data.action === "find") {
     findWord(msg.data.word);
+  } else if (msg.data.action === "pattern_match") {
+    patternMatch(msg.data.pattern);
   } else {
     throw "Unimplemented.";
   }
