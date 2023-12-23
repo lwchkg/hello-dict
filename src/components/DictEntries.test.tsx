@@ -46,6 +46,6 @@ describe("DictEntries component test", () => {
     rerender(<DictEntries word="Hello" />);
     await screen.findAllByText("3");
     // Old text replaced.
-    expect(async () => screen.getAllByText("1")).rejects.toThrowError();
+    expect(() => screen.getAllByText("1")).toThrow();
   });
 });
