@@ -26,6 +26,12 @@ function Router() {
   );
 }
 
+function getUrlFromSearchText(text: string) {
+  if (text === "") return "#";
+  if (/[?*]/.test(text)) return patternToUrl(text);
+  return wordToUrl(text);
+}
+
 function App() {
   const [word, setWord] = useState("");
 
@@ -34,13 +40,7 @@ function App() {
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
-    window.location.assign(
-      word !== ""
-        ? /[?*]/.test(word)
-          ? patternToUrl(word)
-          : wordToUrl(word)
-        : "#",
-    );
+    window.location.assign(getUrlFromSearchText(word));
     e.preventDefault();
   }
 
