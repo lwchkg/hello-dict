@@ -11,12 +11,9 @@ describe("waitForSignals", (): void => {
   test("resolves after set number of signals has been sent.", async () => {
     const waiter = new WaitForSignals(2);
 
-    const promise = new Promise<void>((resolve) => {
-      waiter.promise.then(() => {
-        // The counter here must match the expected number of signals.
-        expect(waiter.getCount()).toBe(2);
-        resolve();
-      });
+    const promise = waiter.promise.then(() => {
+      // The counter here must match the expected number of signals.
+      expect(waiter.getCount()).toBe(2);
     });
 
     // Execute emptyAwait to allow the Promise.then to execute.
@@ -37,21 +34,21 @@ describe("waitForSignals", (): void => {
   test("rejects if fail is called.", async (): Promise<void> => {
     const waiter = new WaitForSignals();
     waiter.fail(new Error("Foo"));
-    expect(async () => await waiter.promise).rejects.toThrowError("Foo");
+    await expect(waiter.promise).rejects.toThrowError("Foo");
   });
 
   test("rejects if fail is called before waiter has finished.", async (): Promise<void> => {
     const waiter = new WaitForSignals(2);
     waiter.signal();
     waiter.fail(new Error("Foo"));
-    expect(async () => await waiter.promise).rejects.toThrowError("Foo");
+    await expect(waiter.promise).rejects.toThrowError("Foo");
   });
 
   test("calling fail after the waiter has finished does not do anything.", async () => {
     const waiter = new WaitForSignals();
     waiter.signal();
     waiter.fail();
-    expect(async () => await waiter.promise).not.toThrowError();
+    await waiter.promise;
   });
 
   test("getCount returns the current count of received signals.", async () => {
