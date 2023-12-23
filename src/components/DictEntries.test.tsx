@@ -22,6 +22,10 @@ vi.mock("providers/dictionary/GcideDictionary", () => {
     getState(): DictState {
       return DictState.loaded;
     }
+
+    async patternMatch(): Promise<string[]> {
+      return [];
+    }
   }
 
   return { GcideDictionary: MockDict };
