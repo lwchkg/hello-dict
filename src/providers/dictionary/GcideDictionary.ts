@@ -108,6 +108,30 @@ export class GcideDictionary implements IDictionary {
     return this.#state;
   }
 
+  async patternMatch(pattern: string): Promise<string[] | null> {
+    if (
+      this.#state === DictState.uninitialized ||
+      this.#state === DictState.retry ||
+      this.#state === DictState.loaded
+    ) {
+      return this.#patternMatchInner(pattern);
+    }
+
+    if (this.#state === DictState.permaError) {
+      throw new Error(dictionaryLoadFailMsg);
+    }
+
+    return new Promise((resolve, reject) => {
+      this.initListeners.push(() => {
+        if (this.#state === DictState.loaded) {
+          resolve(this.#patternMatchInner(pattern));
+        } else {
+          reject(new Error(dictionaryLoadFailMsg));
+        }
+      });
+    });
+  }
+
   async #findWordInner(word: string): Promise<string[] | null> {
     if (
       this.#state === DictState.uninitialized ||
@@ -178,5 +202,29 @@ export class GcideDictionary implements IDictionary {
   #maybeSendNextWorkerMessage(): void {
     if (this.workerListeners.length == 0) this.worker.onmessage = null;
     else this.workerListeners.shift()!();
+  }
+
+  async #patternMatchInner(pattern: string): Promise<string[] | null> {
+    if (
+      this.#state === DictState.uninitialized ||
+      this.#state === DictState.retry
+    )
+      await this.#initDict();
+
+    if (this.#state !== DictState.loaded) return null;
+
+    if (this.worker.onmessage) {
+      await new Promise<void>((resolve) => {
+        this.workerListeners.push(() => resolve());
+      });
+    }
+    return await new Promise<string[]>((resolve) => {
+      this.worker.onmessage = (msg: MessageEvent<string[]>) => {
+        resolve(msg.data.map(gcideTransformHtml));
+        this.#maybeSendNextWorkerMessage();
+      };
+
+      this.worker.postMessage({ action: "pattern_match", pattern });
+    });
   }
 }

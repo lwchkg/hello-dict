@@ -18,6 +18,9 @@ import { DictState } from "./IDictionary";
 
 const testingDictData: Record<string, string[]> = {
   a: ["item a1", "item a2"],
+  ward: ["ward"],
+  warden: ["warden"],
+  weird: ["weird"],
   word: ["item word"],
   // If below 100 bytes, @oneidentity/zstd-js will fail.
   padding: ["This structure needs to be padded to at least 100 bytes."],
@@ -53,6 +56,25 @@ describe("GcideDictionary mock data test", () => {
 
     // Empty array for word not found in the dictionary.
     expect(await dict.findWord("w")).toStrictEqual([]);
+  });
+
+  test("Pattern matching", async () => {
+    //@ts-expect-error Access private constructor.
+    const dict: GcideDictionary = new GcideDictionary(dataUrl);
+
+    expect(await dict.patternMatch("w?rd")).toStrictEqual(["ward", "word"]);
+    expect(await dict.patternMatch("w*rd")).toStrictEqual([
+      "ward",
+      "weird",
+      "word",
+    ]);
+    expect(await dict.patternMatch("w?rd*")).toStrictEqual([
+      "ward",
+      "warden",
+      "word",
+    ]);
+
+    expect(await dict.patternMatch("*no_match*")).toStrictEqual([]);
   });
 });
 
@@ -157,7 +179,7 @@ describe("GcideDictionary network test", () => {
 });
 
 describe("GcideDictionary actual data test", () => {
-  test("searchable words", async () => {
+  test("find words the exist", async () => {
     const dict = GcideDictionary.get();
     for (const word of ["Test", "Study"]) {
       const entries = await dict.findWord(word);
@@ -168,10 +190,27 @@ describe("GcideDictionary actual data test", () => {
     }
   });
 
-  test("unserachable words", async () => {
+  test("find words that does not exist", async () => {
     const dict = GcideDictionary.get();
     const word = "asdf;lkj";
     const entries = await dict.findWord(word);
+    if (entries === null) throw "Must not be null";
+    expectTypeOf(entries).toBeArray;
+    expect(entries.length).toBe(0);
+  });
+
+  test("pattern match with matches", async () => {
+    const dict = GcideDictionary.get();
+    const entries = await dict.patternMatch("t?st");
+    if (entries === null) throw "Must not be null";
+    expectTypeOf(entries).toBeArray();
+    expect(entries.length).toBeGreaterThan(0);
+    entries.forEach((entry) => expectTypeOf(entry).toBeString());
+  });
+
+  test("pattern match with no match", async () => {
+    const dict = GcideDictionary.get();
+    const entries = await dict.patternMatch("?;z*;z?");
     if (entries === null) throw "Must not be null";
     expectTypeOf(entries).toBeArray;
     expect(entries.length).toBe(0);

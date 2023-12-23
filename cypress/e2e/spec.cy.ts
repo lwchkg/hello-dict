@@ -41,12 +41,27 @@ describe("Hello Dict app", () => {
     cy.title().should("include", "study");
   });
 
-  it("Search with an empty textbox should navigate to somewhere other than #/word/ .", () => {
+  it("Search with pattern should go to search results.", () => {
+    cy.visit("/");
+    cy.get(".word-input input").type("t?st").should("have.value", "t?st");
+    cy.get(".word-input button").click();
+    cy.hash().should("eq", "#/search/t%3Fst");
+
+    cy.title().should("include", "t?st");
+    cy.get(".search-result")
+      .contains(/\btest\b/i)
+      .click();
+
+    cy.hash().should("eq", "#/word/test");
+  });
+
+  it("Search with an empty textbox should navigate to somewhere other than #/word/ or #/search/ .", () => {
     cy.visit("/#about");
     cy.get(".word-input button").click();
     // The browser should navigate to a new URL (no "about").
-    cy.hash().should("not.include", "about");
-    cy.hash().should("not.include", "word");
+    cy.hash().should("not.include", "/about");
+    cy.hash().should("not.include", "/word/");
+    cy.hash().should("not.include", "/search/");
     cy.title().should("not.include", "- Hello");
   });
 });
