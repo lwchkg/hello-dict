@@ -8,5 +8,6 @@
   ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
+  "proseWrap": "always",
   "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }
