@@ -22,6 +22,11 @@ Coded with ❤️ by WC Leung.
   [this](https://en.wikipedia.org/wiki/URI_fragment) to know how privacy works
   with these links.)
 
+## Screenshots
+
+![Dark mode](readme_assets/screenshot1.webp)
+![Light mode](readme_assets/screenshot2.webp)
+
 ## Tech stack
 
 - React, TypeScript and Vite
