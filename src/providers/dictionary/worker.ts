@@ -23,9 +23,20 @@ export type MessageType =
   | FindWordMessageType
   | PatternMatchMessageType;
 
+type PortType = {
+  postMessage: (msg: unknown) => void;
+};
+
 type dictRecord = Record<string, string[]>;
 
-let initialized = false;
+enum InitStatus {
+  NotInitailized,
+  Initializing,
+  Initialized,
+}
+
+let initialized = InitStatus.NotInitailized;
+const initListeners: (() => void)[] = [];
 let jsonData: dictRecord;
 const mapping = new Map<string, string[]>();
 const wordList: string[] = [];
@@ -42,7 +53,24 @@ function generateMappingAndWordList(jsonData: dictRecord): void {
   });
 }
 
-async function init(url: string, integrity?: string) {
+async function init(port: PortType, url: string, integrity?: string) {
+  console.log(port, initialized);
+  if (initialized == InitStatus.Initialized) {
+    port.postMessage(true);
+    return;
+  }
+
+  if (initialized == InitStatus.Initializing) {
+    await new Promise((resolve) => {
+      initListeners.push(() => {
+        resolve(true);
+      });
+    });
+    port.postMessage(true);
+    return;
+  }
+
+  initialized = InitStatus.Initializing;
   // Start initializing module before fetching data to take advantage of
   // parallelism.
   const zstdPromise = ZstdInit();
@@ -55,7 +83,7 @@ async function init(url: string, integrity?: string) {
       : await fetch(url);
     compressed = new Uint8Array(await response.arrayBuffer());
   } catch (e) {
-    postMessage(e);
+    port.postMessage(e);
     return;
   }
   console.timeEnd("Fetch data");
@@ -78,12 +106,15 @@ async function init(url: string, integrity?: string) {
   generateMappingAndWordList(jsonData);
   console.timeEnd("Generate index");
 
-  initialized = true;
+  initialized = InitStatus.Initialized;
 
-  self.postMessage(true);
+  port.postMessage(true);
+  initListeners.forEach((fn) => {
+    fn();
+  });
 }
 
-function findWord(word: string): void {
+function findWord(port: PortType, word: string): void {
   if (!initialized) throw "Not initialized.";
 
   const key = toKey(word);
@@ -92,10 +123,10 @@ function findWord(word: string): void {
   mapping.get(key)?.forEach((entry) => {
     result.push(...jsonData[entry]);
   });
-  self.postMessage(result);
+  port.postMessage(result);
 }
 
-function patternMatch(pattern: string): void {
+function patternMatch(port: PortType, pattern: string): void {
   if (!initialized) throw "Not initialized.";
 
   // Replace "*" by ".*", "?" by ".", prepend "\" for all other special chars.
@@ -106,17 +137,30 @@ function patternMatch(pattern: string): void {
     );
   const re = RegExp(`^${transformed}$`);
 
-  self.postMessage(wordList.filter((word) => re.test(word)));
+  port.postMessage(wordList.filter((word) => re.test(word)));
 }
 
-self.onmessage = (msg: MessageEvent<MessageType>) => {
+function onmessageHandler(port: PortType, msg: MessageEvent<MessageType>) {
   if (msg.data.action === "init") {
-    init(msg.data.url, msg.data.integrity);
+    init(port, msg.data.url, msg.data.integrity);
   } else if (msg.data.action === "find") {
-    findWord(msg.data.word);
+    findWord(port, msg.data.word);
   } else if (msg.data.action === "pattern_match") {
-    patternMatch(msg.data.pattern);
+    patternMatch(port, msg.data.pattern);
   } else {
     throw "Unimplemented.";
   }
-};
+}
+
+if (self.onconnect === null) {
+  self.onconnect = (event: MessageEvent<MessageType>) => {
+    const port = event.ports[0];
+    port.onmessage = (msg: MessageEvent<MessageType>) => {
+      onmessageHandler(port, msg);
+    };
+  };
+} else {
+  self.onmessage = (msg: MessageEvent<MessageType>) => {
+    onmessageHandler(self, msg);
+  };
+}

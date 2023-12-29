@@ -62,15 +62,22 @@ function gcideTransformHtml(html: string): string {
 
 export class GcideDictionary implements IDictionary {
   initListeners: (() => void)[] = [];
+  port: Worker | SharedWorker["port"];
   readonly url: string = gcideUrl;
-  worker: Worker = new Worker(new URL(workerUrl, import.meta.url), {
-    type: "module",
-  });
+  worker: Worker | SharedWorker = SharedWorker
+    ? new SharedWorker(new URL(workerUrl, import.meta.url), {
+        type: "module",
+        name: workerUrl,
+      })
+    : new Worker(new URL(workerUrl, import.meta.url), {
+        type: "module",
+      });
   workerListeners: (() => void)[] = [];
-
   #state: DictState = DictState.uninitialized;
 
   private constructor(testingDictUrl?: string) {
+    this.port =
+      this.worker instanceof SharedWorker ? this.worker.port : this.worker;
     if (testingDictUrl) this.url = testingDictUrl;
     this.#initDict();
   }
@@ -141,18 +148,18 @@ export class GcideDictionary implements IDictionary {
 
     if (this.#state !== DictState.loaded) return null;
 
-    if (this.worker.onmessage) {
+    if (this.port.onmessage) {
       await new Promise<void>((resolve) => {
         this.workerListeners.push(() => resolve());
       });
     }
     return await new Promise<string[]>((resolve) => {
-      this.worker.onmessage = (msg: MessageEvent<string[]>) => {
+      this.port.onmessage = (msg: MessageEvent<string[]>) => {
         resolve(msg.data.map(gcideTransformHtml));
         this.#maybeSendNextWorkerMessage();
       };
 
-      this.worker.postMessage({ action: "find", word });
+      this.port.postMessage({ action: "find", word });
     });
   }
 
@@ -173,13 +180,13 @@ export class GcideDictionary implements IDictionary {
       };
       if (this.url == gcideUrl) msg.integrity = gcideIntegrity;
 
-      if (this.worker.onmessage) {
+      if (this.port.onmessage) {
         await new Promise<void>((resolve) => {
           this.workerListeners.push(() => resolve());
         });
       }
       await new Promise<void>((resolve, reject) => {
-        this.worker.onmessage = (msg: MessageEvent<boolean | Error>) => {
+        this.port.onmessage = (msg: MessageEvent<boolean | Error>) => {
           if (msg.data === true) {
             resolve();
           } else {
@@ -188,7 +195,7 @@ export class GcideDictionary implements IDictionary {
           this.#maybeSendNextWorkerMessage();
         };
 
-        this.worker.postMessage(msg);
+        this.port.postMessage(msg);
       });
       this.#state = DictState.loaded;
     } catch (e) {
@@ -200,7 +207,7 @@ export class GcideDictionary implements IDictionary {
   }
 
   #maybeSendNextWorkerMessage(): void {
-    if (this.workerListeners.length == 0) this.worker.onmessage = null;
+    if (this.workerListeners.length == 0) this.port.onmessage = null;
     else this.workerListeners.shift()!();
   }
 
@@ -213,18 +220,18 @@ export class GcideDictionary implements IDictionary {
 
     if (this.#state !== DictState.loaded) return null;
 
-    if (this.worker.onmessage) {
+    if (this.port.onmessage) {
       await new Promise<void>((resolve) => {
         this.workerListeners.push(() => resolve());
       });
     }
     return await new Promise<string[]>((resolve) => {
-      this.worker.onmessage = (msg: MessageEvent<string[]>) => {
+      this.port.onmessage = (msg: MessageEvent<string[]>) => {
         resolve(msg.data.map(gcideTransformHtml));
         this.#maybeSendNextWorkerMessage();
       };
 
-      this.worker.postMessage({ action: "pattern_match", pattern });
+      this.port.postMessage({ action: "pattern_match", pattern });
     });
   }
 }
