@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { ZstdInit } from "@oneidentity/zstd-js";
 import "@vitest/web-worker";
 import {
@@ -75,6 +76,20 @@ describe("GcideDictionary mock data test", () => {
     ]);
 
     expect(await dict.patternMatch("*no_match*")).toStrictEqual([]);
+  });
+
+  test("dictionary loads if there is no SharedWorker support", async () => {
+    // Remove global.SharedWorker to emulate the lack of ShareWorker support.
+    const realSharedWorker = SharedWorker;
+    // @ts-expect-error Deletion of SharedWorker is a TS error.
+    delete global.SharedWorker;
+
+    //@ts-expect-error Access private constructor.
+    const dict: GcideDictionary = new GcideDictionary(dataUrl);
+
+    expect(await dict.findWord("a")).toStrictEqual(testingDictData["a"]);
+
+    global.SharedWorker = realSharedWorker;
   });
 });
 
