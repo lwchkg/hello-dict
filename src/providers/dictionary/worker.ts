@@ -37,6 +37,7 @@ enum InitStatus {
 
 let initialized = InitStatus.NotInitailized;
 const initListeners: (() => void)[] = [];
+let error: Error = new Error(""); // The error to return if init failed.
 let jsonData: dictRecord;
 const mapping = new Map<string, string[]>();
 const wordList: string[] = [];
@@ -66,49 +67,51 @@ async function init(port: PortType, url: string, integrity?: string) {
         resolve(true);
       });
     });
-    port.postMessage(true);
+    // @ts-expect-error The value of initialized is expected to be changed.
+    port.postMessage(initialized === InitStatus.Initialized ? true : error);
     return;
   }
 
   initialized = InitStatus.Initializing;
-  // Start initializing module before fetching data to take advantage of
-  // parallelism.
-  const zstdPromise = ZstdInit();
 
-  console.time("Fetch data");
-  let compressed: Uint8Array;
   try {
+    // Start initializing module before fetching data to take advantage of
+    // parallelism.
+    const zstdPromise = ZstdInit();
+
+    console.time("Fetch data");
     const response = integrity
       ? await fetch(url, { cache: "force-cache", integrity })
       : await fetch(url);
-    compressed = new Uint8Array(await response.arrayBuffer());
+    const compressed = new Uint8Array(await response.arrayBuffer());
+    console.timeEnd("Fetch data");
+
+    const { ZstdSimple } = await zstdPromise;
+
+    console.time("Decompress data");
+    const jsonByteArray = ZstdSimple.decompress(compressed);
+    console.timeEnd("Decompress data");
+
+    console.time("Convert to string");
+    const jsonString = new TextDecoder().decode(jsonByteArray);
+    console.timeEnd("Convert to string");
+
+    console.time("JSON parse");
+    jsonData = JSON.parse(jsonString);
+    console.timeEnd("JSON parse");
+
+    console.time("Generate index");
+    generateMappingAndWordList(jsonData);
+    console.timeEnd("Generate index");
+
+    initialized = InitStatus.Initialized;
+    port.postMessage(true);
   } catch (e) {
+    error = e as Error;
+    initialized = InitStatus.NotInitailized;
     port.postMessage(e);
-    return;
   }
-  console.timeEnd("Fetch data");
 
-  const { ZstdSimple } = await zstdPromise;
-
-  console.time("Decompress data");
-  const jsonByteArray = ZstdSimple.decompress(compressed);
-  console.timeEnd("Decompress data");
-
-  console.time("Convert to string");
-  const jsonString = new TextDecoder().decode(jsonByteArray);
-  console.timeEnd("Convert to string");
-
-  console.time("JSON parse");
-  jsonData = JSON.parse(jsonString);
-  console.timeEnd("JSON parse");
-
-  console.time("Generate index");
-  generateMappingAndWordList(jsonData);
-  console.timeEnd("Generate index");
-
-  initialized = InitStatus.Initialized;
-
-  port.postMessage(true);
   initListeners.forEach((fn) => {
     fn();
   });
