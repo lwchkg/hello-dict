@@ -64,4 +64,22 @@ describe("Hello Dict app", () => {
     cy.hash().should("not.include", "/search/");
     cy.title().should("not.include", "- Hello");
   });
+
+  it("App should load without support of SharedWorker", () => {
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        // @ts-expect-error Deletion of SharedWorker is a TS error.
+        delete win.SharedWorker;
+      },
+    });
+    const element = cy.get(".word-input input");
+    element.type("test").should("have.value", "test");
+    element.type("\n");
+    cy.hash().should("eq", "#/word/test");
+
+    // The dictionary entries should load with an entry with the word.
+    // Comparison is not case-sensitive because GCIDE capitalizes headwords.
+    cy.get(".dict-item").contains(/\btest\b/i);
+    cy.title().should("include", "test");
+  });
 });
