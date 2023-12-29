@@ -49,7 +49,7 @@ describe("GcideDictionary mock data test", () => {
   });
 
   test("Data content", async () => {
-    //@ts-expect-error Access private constructor.
+    // @ts-expect-error Access private constructor.
     const dict: GcideDictionary = new GcideDictionary(dataUrl);
 
     expect(await dict.findWord("a")).toStrictEqual(testingDictData["a"]);
@@ -60,7 +60,7 @@ describe("GcideDictionary mock data test", () => {
   });
 
   test("Pattern matching", async () => {
-    //@ts-expect-error Access private constructor.
+    // @ts-expect-error Access private constructor.
     const dict: GcideDictionary = new GcideDictionary(dataUrl);
 
     expect(await dict.patternMatch("w?rd")).toStrictEqual(["ward", "word"]);
@@ -84,7 +84,7 @@ describe("GcideDictionary mock data test", () => {
     // @ts-expect-error Deletion of SharedWorker is a TS error.
     delete global.SharedWorker;
 
-    //@ts-expect-error Access private constructor.
+    // @ts-expect-error Access private constructor.
     const dict: GcideDictionary = new GcideDictionary(dataUrl);
 
     expect(await dict.findWord("a")).toStrictEqual(testingDictData["a"]);
@@ -123,7 +123,7 @@ describe("GcideDictionary network test", () => {
 
     const waiter = new WaitForSignals();
 
-    //@ts-expect-error Access private constructor.
+    // @ts-expect-error Access private constructor.
     const dict: GcideDictionary = new GcideDictionary("mock");
     expect(dict.getState()).toBe(DictState.loading);
     waiter.signal();
@@ -141,7 +141,7 @@ describe("GcideDictionary network test", () => {
       return realFetch(input, init);
     });
 
-    //@ts-expect-error Access private constructor.
+    // @ts-expect-error Access private constructor.
     const dict: GcideDictionary = new GcideDictionary(dataUrl);
 
     // Find a word to force dictionary initialization to finish.
@@ -179,7 +179,7 @@ describe("GcideDictionary network test", () => {
       return realFetch(input, init);
     });
 
-    //@ts-expect-error Access private constructor.
+    // @ts-expect-error Access private constructor.
     const dict: GcideDictionary = new GcideDictionary();
 
     // Find a word to force dictionary initialization to finish.
