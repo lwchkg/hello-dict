@@ -64,7 +64,7 @@ export class GcideDictionary implements IDictionary {
   initListeners: (() => void)[] = [];
   port: Worker | SharedWorker["port"];
   readonly url: string = gcideUrl;
-  worker: Worker | SharedWorker = SharedWorker
+  worker: Worker | SharedWorker = window.SharedWorker
     ? new SharedWorker(new URL(workerUrl, import.meta.url), {
         type: "module",
         name: workerUrl,
@@ -76,8 +76,7 @@ export class GcideDictionary implements IDictionary {
   #state: DictState = DictState.uninitialized;
 
   private constructor(testingDictUrl?: string) {
-    this.port =
-      this.worker instanceof SharedWorker ? this.worker.port : this.worker;
+    this.port = this.worker instanceof Worker ? this.worker : this.worker.port;
     if (testingDictUrl) this.url = testingDictUrl;
     this.#initDict();
   }
