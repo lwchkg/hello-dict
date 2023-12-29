@@ -55,7 +55,6 @@ function generateMappingAndWordList(jsonData: dictRecord): void {
 }
 
 async function init(port: PortType, url: string, integrity?: string) {
-  console.log(port, initialized);
   if (initialized == InitStatus.Initialized) {
     port.postMessage(true);
     return;
