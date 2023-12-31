@@ -61,7 +61,9 @@ function App() {
             onChange={handleChange}
             value={word}
           />
-          <button type="submit">&gt;</button>
+          <button type="submit" aria-label="submit">
+            &gt;
+          </button>
         </form>
       </header>
       <main>
