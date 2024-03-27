@@ -6,9 +6,9 @@ Coded with ❤️ by WC Leung.
 
 ## Demo
 
-- [Launch HelloDict](https://hellodict.netlify.app)
-- [Lookup for the word ‘dictionary’](https://hellodict.netlify.app#/word/dictionary)
-- [Search for pattern ‘h\*ll?’](https://hellodict.netlify.app/#/search/h*ll%3F)
+- [Launch HelloDict](https://hellodict.pages.dev)
+- [Lookup for the word ‘dictionary’](https://hellodict.pages.dev/#/word/dictionary)
+- [Search for pattern ‘h\*ll?’](https://hellodict.pages.dev/#/search/h*ll%3F)
 
 ## Features
 
